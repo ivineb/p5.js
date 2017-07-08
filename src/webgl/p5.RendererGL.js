@@ -250,9 +250,6 @@ p5.RendererGL.prototype._getShader = function(vertId, fragId, isImmediateMode) {
     var shaderProgram = this._initShaders(vertId, fragId, isImmediateMode);
     this.mHash[mId] = shaderProgram;
   }
-  if(this.curShaderId !== mId) {
-    this.changedShader = true;
-  }
   this.curShaderId = mId;
 
   return this.mHash[this.curShaderId];
@@ -360,6 +357,7 @@ p5.RendererGL.prototype.noFill = function() {
       this.curStrokeColor[2],
       this.curStrokeColor[3]);
   }
+
 
   return this;
 };
