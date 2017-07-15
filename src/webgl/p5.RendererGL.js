@@ -53,6 +53,7 @@ p5.RendererGL = function(elt, pInst, isMainCanvas, attr) {
   this.curStrokeColor = [0.5,0.5,0.5,1.0];
   this.pointSize = 5.0;//default point/stroke
   this.name = 'p5.RendererGL';   // for friendly debugger system
+  this.emptyTexture = null;
   return this;
 };
 
