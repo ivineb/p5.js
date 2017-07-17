@@ -7,8 +7,8 @@ function draw(){
 
   normalMaterial();
   // Change height of the camera with mouseY
-  perspective();
-  camera(120, mouseY, 500.0, // eyeX, eyeY, eyeZ
+  // perspective();
+  camera(120, 0, 500.0, // eyeX, eyeY, eyeZ
          0.0, 0.0, 0.0, // centerX, centerY, centerZ
          0.0, 1.0, 0.0); // upX, upY, upZ
   // console.log(nfs(_renderer.uMVMatrix.mat4[0], 5, 4) + " "
@@ -28,7 +28,7 @@ function draw(){
   //             + nfs(_renderer.uMVMatrix.mat4[14], 5, 4)  + " "
   //             + nfs(_renderer.uMVMatrix.mat4[15], 5, 4)  + "\n");
   var tx = map(mouseX, 0, width, -width/2, width/2);
-  translate(tx, 0);
+  translate(tx, mouseY);
 
   noStroke();
   box(90);

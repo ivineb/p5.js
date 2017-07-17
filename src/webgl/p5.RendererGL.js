@@ -502,7 +502,6 @@ p5.RendererGL.prototype.rotateZ = function(rad) {
  * MV Matrix stack.
  */
 p5.RendererGL.prototype.push = function() {
-  console.log(this.uMVMatrix);
   uMVMatrixStack.push(this.uMVMatrix.copy());
   cameraMatrixStack.push(this.cameraMatrix.copy());
 };
