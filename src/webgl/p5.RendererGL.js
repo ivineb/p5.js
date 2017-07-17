@@ -5,6 +5,7 @@ var shader = require('./shader');
 require('../core/p5.Renderer');
 require('./p5.Matrix');
 var uMVMatrixStack = [];
+var cameraMatrixStack = [];
 
 //@TODO should implement public method
 //to override these attributes
@@ -49,6 +50,25 @@ p5.RendererGL = function(elt, pInst, isMainCanvas) {
   //Geometry & Material hashes
   this.gHash = {};
   this.mHash = {};
+
+  this.cam = {};
+  this.cam.defFOV = 60 * Math.PI / 180.0;
+  this.cam.defX = pInst.width / 2;
+  this.cam.defY = pInst.height / 2;
+  this.cam.defZ = this.cam.defY / (Math.tan(this.cam.defFOV / 2.0));
+  this.cam.defNear = this.cam.defZ / 10.0;
+  this.cam.defFar = this.cam.defZ * 10.0;
+  this.cam.defAspect = pInst.width / pInst.height;
+  this.cam.x = this.cam.defX;
+  this.cam.y = this.cam.defY;
+  this.cam.z = this.cam.defZ;
+  this.cam.eyeDist = 1; // default
+  this.cam.FOV = this.cam.defFOV;
+  this.cam.near = this.cam.defNear;
+  this.cam.far = this.cam.defFar;
+  this.cam.aspect = this.cam.defAspect;
+  this.cameraMatrix = new p5.Matrix();
+
   //Imediate Mode
   //default drawing is done in Retained Mode
   this.isImmediateDrawing = false;
@@ -98,6 +118,8 @@ p5.RendererGL.prototype._setDefaultCamera = function(){
 
 p5.RendererGL.prototype._update = function() {
   this.uMVMatrix = p5.Matrix.identity();
+  this.cameraMatrix = p5.Matrix.identity();
+  // TODO: camera default!
   this.translate(0, 0, -(this.height / 2) / Math.tan(Math.PI * 30 / 180));
   this.ambientLightCount = 0;
   this.directionalLightCount = 0;
@@ -480,7 +502,9 @@ p5.RendererGL.prototype.rotateZ = function(rad) {
  * MV Matrix stack.
  */
 p5.RendererGL.prototype.push = function() {
+  console.log(this.uMVMatrix);
   uMVMatrixStack.push(this.uMVMatrix.copy());
+  cameraMatrixStack.push(this.cameraMatrix.copy());
 };
 
 /**
@@ -492,11 +516,15 @@ p5.RendererGL.prototype.pop = function() {
     throw new Error('Invalid popMatrix!');
   }
   this.uMVMatrix = uMVMatrixStack.pop();
+  if (cameraMatrixStack.length === 0) {
+    throw new Error('Invalid popMatrix!');
+  }
+  this.cameraMatrix = cameraMatrixStack.pop();
 };
 
 p5.RendererGL.prototype.resetMatrix = function() {
   this.uMVMatrix = p5.Matrix.identity();
-  this.translate(0, 0, -800);
+  this.cameraMatrix = p5.Matrix.identity();
   return this;
 };
 
