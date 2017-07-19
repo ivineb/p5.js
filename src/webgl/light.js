@@ -84,7 +84,7 @@ p5.prototype.ambientLight = function(v1, v2, v3, a){
 
   renderer.ambientLightCount++;
   renderer._setUniform('uAmbientLightCount', renderer.ambientLightCount);
-
+  renderer._setUniform('uUseLighting', true);
   return this;
 };
 
@@ -166,6 +166,7 @@ p5.prototype.directionalLight = function(v1, v2, v3, a, x, y, z) {
   renderer.directionalLightCount ++;
   renderer._setUniform('uDirectionalLightCount',
     renderer.directionalLightCount);
+  renderer._setUniform('uUseLighting', true);
 
   return this;
 };
@@ -254,7 +255,7 @@ p5.prototype.pointLight = function(v1, v2, v3, a, x, y, z) {
   this._renderer.pointLightCount++;
   renderer._setUniform('uPointLightCount',
     renderer.pointLightCount);
-
+  renderer._setUniform('uUseLighting', true);
   return this;
 };
 
