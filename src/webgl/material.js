@@ -256,10 +256,17 @@ p5.prototype.ambientMaterial = function(v1, v2, v3, a) {
 
   this._renderer._useShader(shaderProgram);
 
+<<<<<<< HEAD
   var colors = this._renderer._applyColorBlend.apply(this._renderer, arguments);
   this._renderer._setUniform('uMaterialColor', colors);
   this._renderer._setUniform('uSpecular', false);
   this._renderer._setUniform('isTexture', false);
+=======
+  shaderProgram.uSpecular = gl.getUniformLocation(
+    shaderProgram, 'uSpecular' );
+  gl.uniform1i(shaderProgram.uSpecular, false);
+  gl.uniform1i(gl.getUniformLocation(shaderProgram, 'isTexture'), false);
+>>>>>>> minor change
   return this;
 };
 
@@ -312,9 +319,18 @@ p5.prototype.specularMaterial = function(v1, v2, v3, a) {
   this._renderer._useShader(shaderProgram);
 
   var colors = this._renderer._applyColorBlend.apply(this._renderer, arguments);
+<<<<<<< HEAD
   this._renderer._setUniform('uMaterialColor', colors);
   this._renderer._setUniform('uSpecular', true);
   this._renderer._setUniform('isTexture', false);
+=======
+  gl.uniform4f(shaderProgram.uMaterialColor,
+    colors[0], colors[1], colors[2], colors[3]);
+  shaderProgram.uSpecular = gl.getUniformLocation(
+    shaderProgram, 'uSpecular' );
+  gl.uniform1i(shaderProgram.uSpecular, true);
+  gl.uniform1i(gl.getUniformLocation(shaderProgram, 'isTexture'), false);
+>>>>>>> minor change
   return this;
 };
 

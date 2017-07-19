@@ -253,6 +253,9 @@ function(vertId, fragId, isImmediateMode) {
     shaderProgram.attributes[name] = attribute;
   }
 
+  //END SHADERS SETUP
+  this._createEmptyTexture();
+
   // Inspect shader and cache uniform info
 
   shaderProgram.uniforms = {};
