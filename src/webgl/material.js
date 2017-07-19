@@ -124,12 +124,13 @@ p5.prototype.texture = function(){
   }
   var gl = this._renderer.GL;
   gl.depthMask(true);
+  var renderer = this._renderer;
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  this._renderer.drawMode = 'texture';
-  var shaderProgram = this._renderer._getShader('lightVert',
+  renderer.drawMode = 'texture';
+  var shaderProgram = renderer._getShader('lightVert',
     'lightTextureFrag');
-  this._useShader(shaderProgram);
+  renderer._useShader(shaderProgram);
   var textureData;
   shaderProgram.uSpecular = gl.getUniformLocation(
     shaderProgram, 'uSpecular' );
@@ -153,7 +154,7 @@ p5.prototype.texture = function(){
     var tex = gl.createTexture();
     args[0]._setProperty('tex', tex);
     args[0]._setProperty('isTexture', true);
-    this._renderer._bind.call(this, tex, textureData);
+    renderer._bind.call(this, tex, textureData);
   }
   else {
     if(args[0] instanceof p5.Graphics ||
@@ -164,13 +165,13 @@ p5.prototype.texture = function(){
     else if(args[0] instanceof p5.Image){
       textureData = args[0].canvas;
     }
-    this._renderer._bind.call(this, args[0].tex, textureData);
+    renderer._bind.call(this, args[0].tex, textureData);
   }
 
   //this is where we'd activate multi textures
   //@todo multi textures can be done in the _setUniform function
-  this._renderer._setUniform('isTexture', true);
-  this._renderer._setUniform('uSampler', args[0].tex);
+  renderer._setUniform('isTexture', true);
+  renderer._setUniform('uSampler', args[0].tex);
 
   return this;
 };
@@ -257,17 +258,10 @@ p5.prototype.ambientMaterial = function(v1, v2, v3, a) {
 
   this._renderer._useShader(shaderProgram);
 
-<<<<<<< HEAD
   var colors = this._renderer._applyColorBlend.apply(this._renderer, arguments);
   this._renderer._setUniform('uMaterialColor', colors);
   this._renderer._setUniform('uSpecular', false);
   this._renderer._setUniform('isTexture', false);
-=======
-  shaderProgram.uSpecular = gl.getUniformLocation(
-    shaderProgram, 'uSpecular' );
-  gl.uniform1i(shaderProgram.uSpecular, false);
-  gl.uniform1i(gl.getUniformLocation(shaderProgram, 'isTexture'), false);
->>>>>>> minor change
   return this;
 };
 
@@ -320,18 +314,9 @@ p5.prototype.specularMaterial = function(v1, v2, v3, a) {
   this._renderer._useShader(shaderProgram);
 
   var colors = this._renderer._applyColorBlend.apply(this._renderer, arguments);
-<<<<<<< HEAD
   this._renderer._setUniform('uMaterialColor', colors);
   this._renderer._setUniform('uSpecular', true);
   this._renderer._setUniform('isTexture', false);
-=======
-  gl.uniform4f(shaderProgram.uMaterialColor,
-    colors[0], colors[1], colors[2], colors[3]);
-  shaderProgram.uSpecular = gl.getUniformLocation(
-    shaderProgram, 'uSpecular' );
-  gl.uniform1i(shaderProgram.uSpecular, true);
-  gl.uniform1i(gl.getUniformLocation(shaderProgram, 'isTexture'), false);
->>>>>>> minor change
   return this;
 };
 
