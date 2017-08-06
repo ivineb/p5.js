@@ -103,6 +103,10 @@ p5.RendererGL = function(elt, pInst, isMainCanvas, attr) {
   this.pointSize = 5.0;//default point/stroke
   this.name = 'p5.RendererGL';   // for friendly debugger system
 
+  // a map of objects (p5.Image, etc.) to p5.Texture
+  // objects in this renderer context.
+  this.textures = [];
+
   return this;
 };
 
@@ -640,7 +644,22 @@ p5.RendererGL.prototype._getColorShader = function () {
   return this._defaultColorShader;
 };
 
+p5.RendererGL.prototype.getTexture = function (img) {
+  // efficiency?
+  var f = function(element) {
+    return element.src === img;
+  };
 
+  var tex = this.textures.find(f);
+  if (tex === undefined) {
+    tex = new p5.Texture(this, img);
+    this.textures.push(tex);
+  }
+
+  tex.set(img);
+
+  return tex;
+};
 
 
 module.exports = p5.RendererGL;
