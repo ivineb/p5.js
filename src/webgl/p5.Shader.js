@@ -85,7 +85,8 @@ p5.Shader.prototype.init = function() {
     gl.attachShader(this._glProgram, this._fragShader);
     gl.linkProgram(this._glProgram);
     if (!gl.getProgramParameter(this._glProgram, gl.LINK_STATUS)) {
-      console.error('Snap! Error linking shader program');
+      console.error('Snap! Error linking shader program: ' +
+        gl.getProgramInfoLog(this._glProgram));
     }
 
     this._loadAttributes();
@@ -341,6 +342,38 @@ p5.Shader.prototype.setUniform = function(uniformName, data)
   return this;
 };
 
+/* NONE OF THIS IS FAST OR EFFICIENT BUT BEAR WITH ME */
+
+/*
+p5.Shader.prototype.isPointShader = function () {
+
+};
+*/
+
+p5.Shader.prototype.isLightShader = function () {
+  return this.uniforms.uUseLighting !== undefined ||
+    this.uniforms.uAmbientLightCount !== undefined ||
+    this.uniforms.uDirectionalLightCount !== undefined ||
+    this.uniforms.uPointLightCount !== undefined ||
+    this.uniforms.uAmbientColor !== undefined ||
+    this.uniforms.uDirectionalColor !== undefined ||
+    this.uniforms.uPointLightLocation !== undefined ||
+    this.uniforms.uPointLightColor !== undefined ||
+    this.uniforms.uLightingDirection !== undefined ||
+    this.uniforms.uSpecular !== undefined;
+};
+
+p5.Shader.prototype.isTextureShader = function () {
+  return this.samplerIndex > 0;
+};
+
+p5.Shader.prototype.isColorShader = function () {
+  return this.attributes.hasOwnProperty('aVertexColor');
+};
+
+p5.Shader.prototype.isTexLightShader = function () {
+  return this.isLightShader() && this.isTextureShader();
+};
 
 /**
  * @method enableAttrib

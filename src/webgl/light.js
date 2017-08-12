@@ -64,7 +64,10 @@ var p5 = require('../core/core');
  */
 p5.prototype.ambientLight = function(v1, v2, v3, a){
   var renderer = this._renderer;
-  var shader = renderer.setShader(renderer._getLightShader());
+  var shader = renderer.curShader;
+  if (! shader.isLightShader()) {
+    shader = renderer.setShader(renderer._getLightShader());
+  }
 
   var color = this._renderer._pInst.color.apply(
     this._renderer._pInst, arguments);
@@ -120,7 +123,10 @@ p5.prototype.ambientLight = function(v1, v2, v3, a){
  */
 p5.prototype.directionalLight = function(v1, v2, v3, a, x, y, z) {
   var renderer = this._renderer;
-  var shader = renderer.setShader(renderer._getLightShader());
+  var shader = renderer.curShader;
+  if (! shader.isLightShader()) {
+    shader = renderer.setShader(renderer._getLightShader());
+  }
 
   //@TODO: check parameters number
   var color = renderer._pInst.color.apply(
@@ -204,7 +210,10 @@ p5.prototype.directionalLight = function(v1, v2, v3, a, x, y, z) {
  */
 p5.prototype.pointLight = function(v1, v2, v3, a, x, y, z) {
   var renderer = this._renderer;
-  var shader = renderer.setShader(renderer._getLightShader());
+  var shader = renderer.curShader;
+  if (! shader.isLightShader()) {
+    shader = renderer.setShader(renderer._getLightShader());
+  }
 
   //@TODO: check parameters number
   var color = this._renderer._pInst.color.apply(

@@ -10,6 +10,40 @@
 var p5 = require('../core/core');
 require('./p5.Texture');
 
+
+p5.prototype.loadShader = function (vertFile, fragFile) {
+  var loadedShader = new p5.Shader();
+
+  var self = this;
+  var loadedFrag = false;
+  var loadedVert = false;
+
+  this.loadStrings(fragFile, function(result) {
+    loadedShader._fragSrc = result.join('\n');
+    loadedFrag = true;
+    if (!loadedVert) {
+      self._incrementPreload();
+    }
+  });
+  this.loadStrings(vertFile, function(result) {
+    loadedShader._vertSrc = result.join('\n');
+    loadedVert = true;
+    if (!loadedFrag) {
+      self._incrementPreload();
+    }
+  });
+
+  return loadedShader;
+};
+
+p5.prototype.setShader = function (s) {
+  if (s._renderer === undefined) {
+    s._renderer = this._renderer;
+  }
+  this._renderer.setShader(s);
+  return this;
+};
+
 /**
  * Normal material for geometry. You can view all
  * possible materials in this
@@ -127,7 +161,10 @@ p5.prototype.texture = function(){
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   renderer.drawMode = 'texture';
-  var shader = renderer.setShader(renderer._getLightShader());
+  var shader = renderer.curShader;
+  if (! shader.isTextureShader()) {
+    shader = renderer.setShader(renderer._getLightShader());
+  }
   shader.setUniform('uSpecular', false);
   shader.setUniform('isTexture', true);
   shader.setUniform('uSampler', args[0]);
@@ -169,7 +206,10 @@ p5.prototype.texture = function(){
  *
  */
 p5.prototype.ambientMaterial = function(v1, v2, v3, a) {
-  var shader = this._renderer.setShader(this._renderer._getLightShader());
+  var shader = this._renderer.curShader;
+  if (! shader.isLightShader()) {
+    shader = this._renderer.setShader(this._renderer._getLightShader());
+  }
 
   var colors = this._renderer._applyColorBlend.apply(this._renderer, arguments);
   shader.setUniform('uMaterialColor', colors);
@@ -211,7 +251,10 @@ p5.prototype.ambientMaterial = function(v1, v2, v3, a) {
  *
  */
 p5.prototype.specularMaterial = function(v1, v2, v3, a) {
-  var shader = this._renderer.setShader(this._renderer._getLightShader());
+  var shader = this._renderer.curShader;
+  if (! shader.isLightShader()) {
+    shader = this._renderer.setShader(this._renderer._getLightShader());
+  }
 
   var colors = this._renderer._applyColorBlend.apply(this._renderer, arguments);
   shader.setUniform('uMaterialColor', colors);
