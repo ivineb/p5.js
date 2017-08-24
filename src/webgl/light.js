@@ -159,7 +159,7 @@ p5.prototype.directionalLight = function(v1, v2, v3, a, x, y, z) {
   renderer.directionalLightCount ++;
   shader.setUniform('uDirectionalLightCount',
     renderer.directionalLightCount);
-  renderer._setUniform('uUseLighting', true);
+  shader.setUniform('uUseLighting', true);
 
   return this;
 };

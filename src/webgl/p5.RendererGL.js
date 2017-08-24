@@ -8,17 +8,6 @@ var fs = require('fs');
 
 var uMVMatrixStack = [];
 
-//@TODO should implement public method
-//to override these attributes
-var attributes = {
-  alpha: true,
-  depth: true,
-  stencil: true,
-  antialias: false,
-  premultipliedAlpha: false,
-  preserveDrawingBuffer: false
-};
-
 var defaultShaders = {
   immediateVert:
     fs.readFileSync(__dirname + '/shaders/immediate.vert', 'utf-8'),
