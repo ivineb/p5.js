@@ -9,6 +9,7 @@ var fs = require('fs');
 
 var uMVMatrixStack = [];
 var cameraMatrixStack = [];
+var glStyleStack = [];
 
 var defaultShaders = {
   immediateVert:
@@ -732,6 +733,38 @@ p5.RendererGL.prototype.rotateZ = function(rad) {
 p5.RendererGL.prototype.push = function() {
   uMVMatrixStack.push(this.uMVMatrix.copy());
   cameraMatrixStack.push(this.cameraMatrix.copy());
+
+  // remember any current textures in use in the shader.
+  // this sets us up to allow things like calling push()
+  // before using textures for internal purposes, like making
+  // sure that rendering text() and image() don't replace
+  // any use provided texture()
+  var cachedTextures = [];
+  for (var i = 0; i < this.curFillShader.samplers.length; i++) {
+    cachedTextures[i] = this.curFillShader.samplers[i].texture;
+  }
+
+  glStyleStack.push({
+    curCamera: this.curCamera,
+    cameraFOV: this.cameraFOV,
+    cameraAspect: this.cameraAspect,
+    cameraX: this.cameraX,
+    cameraY: this.cameraY,
+    cameraZ: this.cameraZ,
+    cameraNear: this.cameraNear,
+    cameraFar: this.cameraFar,
+    curFillShader: this.curFillShader, /* not sure about this... */
+    curFillColor: this.curFillColor,
+    curStrokeShader: this.curStrokeShader,
+    pointSize: this.pointSize,
+    curStrokeWeight: this.curStrokeWeight,
+    curStrokeColor: this.curStrokeColor,
+    drawMode: this.drawMode,
+    /* this property is on the shader not the renderer :\ feels messy, maybe */
+    fillShaderSamplers: cachedTextures,
+    fillShaderActive: this.curFillShader.active,
+    strokeShaderActive: this.curStrokeShader.active
+  });
 };
 
 /**
@@ -746,6 +779,44 @@ p5.RendererGL.prototype.pop = function() {
     throw new Error('Invalid popMatrix!');
   }
   this.cameraMatrix = cameraMatrixStack.pop();
+
+  var lastS = glStyleStack.pop();
+  for(var prop in lastS){
+    if (prop === 'fillShaderSamplers' ||  prop === 'fillShaderActive'  ||
+      prop === 'strokeShaderActive') {
+      // ... not yet, see below.
+    } else {
+      // in every other case, we're just resetting the
+      // property on this renderer directly.
+      this[prop] = lastS[prop];
+    }
+  }
+
+  // shader params
+  var cachedTextures = lastS.fillShaderSamplers;
+  for (var i = 0; i < cachedTextures.length; i++) {
+    this.curFillShader.samplers[i].texture = cachedTextures[i];
+  }
+  this.curFillShader.active = lastS.fillShaderActive;
+  this.curStrokeShader.active = lastS.strokeShaderActive;
+
+  var cachedDrawMode = lastS.drawMode;
+  /* here, make sure the updates are applied correctly to the
+   * shaders and such depending on the draw mode.
+   */
+  if (this.curFillShader.active && cachedDrawMode === constants.FILL) {
+    this.setFillShader(this.curFillShader);
+    this.curFillShader.setUniform('uMaterialColor', this.curFillColor);
+    //this.fill(this.curFillColor);
+    // TODO
+  }
+
+  if (this.curStrokeShader.active) {
+    this.setStrokeShader(this.curStrokeShader);
+    this._setStrokeColor(this.curStrokeColor);
+  }
+
+  // todo: reset other uniforms? is the above sufficient
 };
 
 p5.RendererGL.prototype.resetMatrix = function() {
